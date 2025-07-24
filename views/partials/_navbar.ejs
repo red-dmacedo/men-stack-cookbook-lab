@@ -1,7 +1,7 @@
-<div id="nav">
+<div class="nav-container">
   <a href="/">Home</a>
   <% if(user) { %>
-    <a href="/">View My Recipes</a>
+    <a href="/recipes">View My Recipes</a>
     <a href="/auth/sign-out">Sign Out</a>
   <% } %>
   <% if(!user) { %>

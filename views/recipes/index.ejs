@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/navbar.css">
+  <link rel="stylesheet" href="/styles/general.css">
+  <title>My Recipes</title>
+</head>
+<body>
+  <h1>My Recipes</h1>
+  <%- include('../partials/_navbar.ejs') %>
+  <% if(recipes.length === 0) { %>
+  <p>You have no recipes. Go <a href="/recipes/new">create</a> some!</p>
+  <% } else { %>
+  <%# if(recipes.length !== 0) { %>
+    <% for(let r of recipes) { %>
+      <a href="/recipes/<%= r._id %>"><h2><%= r.name %></h2></a>
+    <% } %>
+  <% } %>
+</body>
+</html>

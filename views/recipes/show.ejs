@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/navbar.css">
+  <link rel="stylesheet" href="/styles/general.css">
+  <title>My Recipes</title>
+</head>
+<body>
+  <h1>My Recipes</h1>
+  <%- include('../partials/_navbar.ejs') %>
+  <% if(recipe) { %>
+    <h2><%= recipe.name %></h2>
+    <p><%= recipe.instructions %></p>
+    <ul>
+      <% for(let i of recipes.ingredients) { %>
+        <li><%= i.name %></li>
+      <% } %>
+    </ul>
+  <% } %>
+</body>
+</html>

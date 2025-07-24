@@ -11,6 +11,7 @@ const recipesController = require('./controllers/recipes.js');
 const ingredientsController = require('./controllers/ingredients.js');
 const isSignedIn = require('./middleware/is-signed-in.js');
 const passUserToView = require('./middleware/pass-user-to-view.js');
+const path = require("path");
 
 const port = process.env.PORT ? process.env.PORT : '3000';
 
@@ -21,6 +22,7 @@ mongoose.connection.on('connected', () => {
 });
 
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride('_method'));
 // app.use(morgan('dev'));
 app.use(
