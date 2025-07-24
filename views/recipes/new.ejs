@@ -10,5 +10,21 @@
 <body>
   <h1>Create a New Recipe</h1>
   <%- include('../partials/_navbar.ejs') %>
+  <!-- Schema: name, instructions, owner, ingredients -->
+  <form action="/recipes" method="POST" class="form-type1">
+    <div>
+      <label for="name">Recipe Name:</label>
+      <input type="text" name="name" id="recipe-name" value="">
+    </div>
+    <label for="instructions">Instructions:</label>
+    <textarea name="instructions" id="recipe-instructions"></textarea>
+    <div class="input-ingredients">
+      <label for="ingredients">Ingredients</label>
+      <input type="text" name="ingredients" value="">
+      <input type="text" name="ingredients" value="">
+      <input type="text" name="ingredients" value="">
+    </div>
+    <button type="submit">Create</button>
+  </form>
 </body>
 </html>
