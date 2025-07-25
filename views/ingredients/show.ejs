@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/navbar.css">
+  <link rel="stylesheet" href="/styles/general.css">
+  <title><%= ingredient.name %></title>
+</head>
+<body>
+  <h1><%= ingredient.name %></h1>
+  <%- include('../partials/_navbar.ejs') %>
+  <h1>Name: <%= ingredient.name %></h1>
+  <div class="flex-column center-items">
+    <a href="/ingredients/<%= ingredient._id %>/edit">Edit item name</a>
+    <form class="flex-column center-items" action="/ingredients/<%=ingredient._id%>?_method=DELETE" method="POST">
+      <button type="submit" style="margin-top: 20px;">Delete</button>
+    </form>
+  </div>
+</body>
+</html>

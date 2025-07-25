@@ -3,8 +3,82 @@ const router = express.Router();
 
 const User = require('../models/user.js');
 const Recipe = require('../models/recipe.js');
+const Ingredient = require('../models/ingredient.js');
+const removeIngredientIdFromRecipes = require('../middleware/remove-ingredient-id-from-recipes.js');
+const testIfNewIngredientExists = require('../middleware/test-if-ingredient-exists.js');
 
 // routes
+router.get('/', async (req, res) => { // display all ingredients
+  try {
+    const ingredients = await Ingredient.find({});
+    ingredients.sort((a, b) => a.name.localeCompare(b.name));
+    res.render('ingredients/index.ejs', { ingredients: ingredients });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  };
+});
 
+router.post('/', testIfNewIngredientExists, async (req, res) => { // handle request to create a new ingredient
+  try {
+    await Ingredient.create({ name: req.body.name });
+    res.redirect('/ingredients');
+  } catch (err) {
+    console.log(err);
+    res.redirect('/');
+  };
+});
+
+router.get('/new', async (req, res) => { // display ingredient creation page
+  try {
+    res.render('ingredients/new.ejs');
+  } catch (err) {
+    console.log(err);
+    res.redirect('/');
+  };
+});
+
+router.get('/:id', async (req, res) => { // display full ingredient page
+  try {
+    const ingredient = await Ingredient.findById(req.params.id);
+    res.render('ingredients/show.ejs', { ingredient: ingredient });
+  } catch (err) {
+    console.log(err);
+    res.redirect('/');
+  };
+});
+
+router.get('/:id/edit', async (req, res) => { // display edit page for an ingredient
+  try {
+    const ingredient = await Ingredient.findById(req.params.id);
+    res.render('ingredients/edit.ejs', { ingredient: ingredient });
+  } catch (err) {
+    console.log(err);
+    res.redirect('/ingredients');
+  };
+});
+
+router.put('/:id', async (req, res) => { // handle ingredient update requests
+  try {
+    console.log('PUT route attempted');
+    const ingredient = await Ingredient.findById(req.params.id);
+    ingredient.set(req.body);
+    await ingredient.save();
+    res.redirect(`/ingredients/${req.params.id}`);
+  } catch (err) {
+    console.log(err);
+    res.redirect('/ingredients');
+  }
+});
+
+router.delete('/:id', removeIngredientIdFromRecipes, async (req, res) => { // handle ingredient delete requests
+  try {
+    await Ingredient.findByIdAndDelete(req.params.id);
+    res.redirect('/ingredients');
+  } catch (err) {
+    console.log(err);
+    res.redirect('/ingredients');
+  };
+});
 
 module.exports = router;
