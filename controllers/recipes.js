@@ -15,9 +15,12 @@ router.get('/', async (req, res) => { // display recipes on index page
 router.post('/', async (req, res) => { // handle request to create a new recipe
   try{
     res.send(`<h1>${JSON.stringify(req.body)}</h1>`);
-    // const newRecipe = new Recipe(req.body);
-    // newRecipe.owner = req.session.user._id;
+    const newRecipe = new Recipe(req.body);
+    newRecipe.owner = req.session.user._id; // assign recipe owner
     // await newRecipe.save();
+    const user = req.session.user; // add recipe to user's list of recipes
+    user.recipes.push(newRecipe._id);
+    user.save();
     // res.redirect('/recipes');
   } catch (err) {
     console.log(err);
@@ -26,10 +29,10 @@ router.post('/', async (req, res) => { // handle request to create a new recipe
 });
 
 router.get('/new', async (req, res) => { // display recipe creation page
-  let ingredients = await Ingredient.find({});
+  let ingredients = await Ingredient.find({ owner: req.session.user._id });
   if(!Array.isArray(ingredients)) ingredients = [ingredients];
-  const myenum = ['','',''];
-  res.render('recipes/new.ejs', {ingredients: ingredients, enum: myenum});
+  const unitTypes = ['cup', 'gallon', 'liter', 'ounce', 'pint', 'quart', 'tablespoon', 'teaspoon',];
+  res.render('recipes/new.ejs', {ingredients: ingredients, unitTypes: unitTypes});
 });
 
 router.get('/:id', async (req, res) => { // display full recipe page

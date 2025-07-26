@@ -5,12 +5,12 @@ const User = require('../models/user.js');
 const Recipe = require('../models/recipe.js');
 const Ingredient = require('../models/ingredient.js');
 const removeIngredientIdFromRecipes = require('../middleware/remove-ingredient-id-from-recipes.js');
-const testIfNewIngredientExists = require('../middleware/test-if-ingredient-exists.js');
+const testIfNewIngredientExists = require('../middleware/test-if-new-ingredient-exists.js');
 
 // routes
 router.get('/', async (req, res) => { // display all ingredients
   try {
-    const ingredients = await Ingredient.find({});
+    const ingredients = await Ingredient.find({ owner: req.session.user._id });
     ingredients.sort((a, b) => a.name.localeCompare(b.name));
     res.render('ingredients/index.ejs', { ingredients: ingredients });
   } catch (err) {
@@ -22,10 +22,11 @@ router.get('/', async (req, res) => { // display all ingredients
 router.post('/', testIfNewIngredientExists, async (req, res) => { // handle request to create a new ingredient
   try {
     await Ingredient.create(req.body);
-    res.redirect('/ingredients');
+    if (req.body.returnPage) { return res.redirect(req.body.returnPage); }; // return to a page if required
+    return res.redirect('/ingredients');
   } catch (err) {
     console.log(err);
-    res.redirect('/');
+    return res.redirect('/');
   };
 });
 
