@@ -38,22 +38,6 @@
             <option value="<%=unit%>"><%=unit.toUpperCase()%>(s)</option>
           <% } %>
         </select>
-
-
-
-          <!-- <div class="ingredient-line" name="ingredients[]">
-            <select name="ingredients[name]"></select>
-            <div class="ingredient-qty">
-            <input type="number" name="ingredients[qty]" value="0">
-            <select name="ingredients[unit]">
-              <option value="">Unit(s)</option>
-              <%# for(unit of unitTypes) { %>
-                <option value="<%#=unit%>"><%#=unit.toUpperCase()%>(s)</option>
-              <#% } %>
-            </select>
-            </div>
-            <br>
-          </div> -->
       <% } else { %>
         <p>You dont have any ingredients, Go <a href="/ingredients/new">create</a> some!</p>
       <% }; %>
