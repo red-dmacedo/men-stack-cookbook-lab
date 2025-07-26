@@ -21,7 +21,7 @@ router.get('/', async (req, res) => { // display all ingredients
 
 router.post('/', testIfNewIngredientExists, async (req, res) => { // handle request to create a new ingredient
   try {
-    await Ingredient.create({ name: req.body.name });
+    await Ingredient.create(req.body);
     res.redirect('/ingredients');
   } catch (err) {
     console.log(err);
@@ -60,8 +60,8 @@ router.get('/:id/edit', async (req, res) => { // display edit page for an ingred
 
 router.put('/:id', async (req, res) => { // handle ingredient update requests
   try {
-    console.log('PUT route attempted');
     const ingredient = await Ingredient.findById(req.params.id);
+    req.body.name = req.body.displayName.toLowerCase();
     ingredient.set(req.body);
     await ingredient.save();
     res.redirect(`/ingredients/${req.params.id}`);

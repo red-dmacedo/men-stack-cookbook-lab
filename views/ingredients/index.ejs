@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/navbar.css">
   <link rel="stylesheet" href="/styles/general.css">
-  <title>All Ingredients</title>
+  <title>My Ingredients</title>
 </head>
 <body>
-  <h1>All Ingredients</h1>
-  <%- include('../partials/_navbar.ejs') %>
+  <h1>My Ingredients</h1>
+  <%- include('../partials/_navbar.ejs') %> 
   <% if(ingredients.length > 0){ %>
     <% for(let i of ingredients) { %>
-      <a href="/ingredients/<%= i._id %>"><h2><%= i.name %></h2></a>
+      <a href="/ingredients/<%= i._id %>"><h2><%= i.displayName %></h2></a>
     <% } %>
   <% } else { %>
     <h2>You don't have any ingredients yet. Go <a href="/ingredients/new">create</a> some!</h2>

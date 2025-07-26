@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/navbar.css">
   <link rel="stylesheet" href="/styles/general.css">
-  <title>Edit <%= ingredient.name %></title>
+  <title>Edit <%= ingredient.displayName %></title>
 </head>
 <body>
-  <h1>Edit <%= ingredient.name %></h1>
+  <h1>Edit <%= ingredient.displayName %></h1>
   <%- include('../partials/_navbar.ejs') %>
   <form action="/ingredients/<%=ingredient._id%>?_method=PUT" method="POST">
-    <label for="name">Name:</label>
-    <input type="text" name="name" value="<%= ingredient.name %>">
+    <label for="displayName">Name:</label>
+    <input type="text" name="displayName" value="<%= ingredient.displayName %>">
     <button type="submit">Submit</button>
   </form>
 </body>
