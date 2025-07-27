@@ -5,28 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/styles/navbar.css">
   <link rel="stylesheet" href="/styles/general.css">
-  <title>Edit <%= recipe.name %></title>
+  <script defer src="/scripts/recipes-new.js"></script>
+  <title>Edit a Recipe</title>
 </head>
 <body>
-  <h1>Edit <%= recipe.name %></h1>
+  <h1>Edit: <%= recipe.name %></h1>
   <%- include('../partials/_navbar.ejs') %>
-  <form action="/recipes/<%= recipe.id %>?_method=PUT" method="POST" class="form-type1">
+  <!-- Schema: name, instructions, owner, ingredients -->
+  <form action="/recipes/<%= recipe._id %>?_method=PUT" method="POST" class="form-type1" id="recipe-creation-form">
     <div>
+      <h2>Recipe</h2>
       <label for="name">Recipe Name:</label>
       <input type="text" name="name" id="recipe-name" value="<%= recipe.name %>">
     </div>
     <label for="instructions">Instructions:</label>
     <textarea name="instructions" id="recipe-instructions"><%= recipe.instructions %></textarea>
-    <div class="input-ingredients">
-      <label for="ingredients">Ingredients</label>
-      <% for(let i of recipe.ingredientNames) { %>
-        <input type="text" name="ingredients" value="<%= i %>">
-      <% } %>
-      <% const moreInputs = (3 - recipe.ingredientNames.length); if( moreInputs > 0){ for(let i = 0;i<moreInputs;i++) { %>
-        <input type="text" name="ingredients" value="">
-      <% }}; %>
-    </div>
-    <button type="submit">Submit</button>
+    <section class="input-ingredients" id="ingredient-area">
+      <h2>Ingredients:</h2>
+      <div id="ingredient-btns">
+        <button type="button" id="add-ingredient-btn">Add Ingredient</button>
+        <button type="button" id="remove-ingredient-btn" style="max-width: 150px;">Remove Ingredient</button>
+      </div>
+      <!-- <div name="ingredients-select" class="ingredients-select"> -->
+      <div id="ingredient-lines">
+        <% recipe.ingredients.forEach((ingr, idx) =>{ %>
+          <div id="ingredient-line<%= idx %>" style="margin:5px;">
+          <% if(ingredients.length > 0){ %>
+            <select name="ingredients[<%= idx %>][refId]" id="ingr-refId<%= idx %>">
+              <% for(let i of ingredients) { %>
+                <option value="<%= i._id %>" <%= (`${i._id}` === ingr.refId) ? "selected" : "" %>><%= i.displayName %></option>
+              <% } %>
+            </select>
+            <input type="number" name="ingredients[<%= idx %>][qty]" value="<%= ingr.qty %>" id="ingr-qty<%= idx %>">
+            <select name="ingredients[<%= idx %>][unit]" id="ingr-unit<%= idx %>">
+              <option value="">Unit(s)</option>
+              <% for(unit of unitTypes) { %>
+                <option value="<%=unit%>" <%= (unit === ingr.unit) ? "selected" : "" %>><%=unit.toUpperCase()%>(s)</option>
+              <% } %>
+            </select>
+          <% } else { %>
+            <p>You dont have any ingredients, Go <a href="/ingredients/new">create</a> some!</p>
+          <% } %>
+          </div>
+        <% }) %>
+      </div>
+    </section>
+    <button type="submit" style="margin-top: 20px;">Save Recipe</button>
+  </form>
+  <form action="/ingredients" method="POST">
+    <h2>Create an Ingredient</h2>
+    <label for="displayName">Ingredient Name:</label>
+    <input type="text" name="displayName" id="" value="">
+    <input type="text" name="returnPage" value="/recipes/new" hidden>
+    <button type="submit">Create</button>
   </form>
 </body>
 </html>

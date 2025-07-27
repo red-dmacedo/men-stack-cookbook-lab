@@ -15,12 +15,16 @@
     <h2>Instructions:</h2>
     <p><%= recipe.instructions %></p>
     <h2>Ingredients:</h2>
-    <ul>
-      <% for(let ingr of recipe.ingredients) { %>
-      <% let curIngr = ingredients.filter(el => el._id.toString() === ingr.refId)[0]; %>
-        <li><strong><%= curIngr.displayName %>:</strong> <%= ingr.qty %> <%= ingr.unit.toUpperCase() %>(s)</li>
-      <% } %>
-    </ul>
+    <% if(ingredients.length) { %>
+      <ul>
+        <% for(let ingr of recipe.ingredients) { %>
+        <% let curIngr = ingredients.find(el => `${el._id}` === ingr.refId); %>
+          <li><strong><%= curIngr.displayName %>:</strong> <%= ingr.qty %> <%= ingr.unit.toUpperCase() %>(s)</li>
+        <% } %>
+      </ul>
+    <% } else { %>
+      <p>No ingredients have been added.</p>
+    <% } %>
     <div class="flex-row">
       <form action="/recipes/<%= recipe._id %>/edit" method="GET">
         <button type="submit">Edit</button>

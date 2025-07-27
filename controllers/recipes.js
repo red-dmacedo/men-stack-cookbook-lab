@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/user.js');
 const Recipe = require('../models/recipe.js');
 const Ingredient = require('../models/ingredient.js');
+const unitTypes = ['cup', 'gallon', 'liter', 'ounce', 'pint', 'quart', 'tablespoon', 'teaspoon',];
 
 // routes
 router.get('/', async (req, res) => { // display recipes on index page
@@ -37,90 +38,33 @@ router.get('/new', async (req, res) => { // display recipe creation page
   let ingredients = await Ingredient.find({ owner: req.session.user._id });
   if (!Array.isArray(ingredients)) ingredients = [ingredients];
   ingredients.sort((a, b) => a.name.localeCompare(b.name));
-  const unitTypes = ['cup', 'gallon', 'liter', 'ounce', 'pint', 'quart', 'tablespoon', 'teaspoon',];
   res.render('recipes/new.ejs', { ingredients: ingredients, unitTypes: unitTypes });
 });
 
 router.get('/:id', async (req, res) => { // display full recipe page
   const recipe = await Recipe.findById(req.params.id);
-  let ingredients = await Ingredient.findById(recipe.ingredients.map(el => el.refId));
+  // let ingredients = await Ingredient.findById(recipe.ingredients.map(el => el.refId));
+  const recipeIngredientIds = recipe.ingredients.map(el => el.refId)
+  let ingredients = await Ingredient.find({ _id: { $in: recipeIngredientIds } });
   if (!Array.isArray(ingredients)) { ingredients = [ingredients] };
   res.render('recipes/show.ejs', { recipe: recipe, ingredients: ingredients });
 });
 
 router.delete('/:id', async (req, res) => { // handle request to delete a recipe
+  // add logic for removing id from ingredients
   await Recipe.findByIdAndDelete(req.params.id);
   res.redirect('/recipes');
 });
 
 router.get('/:id/edit', async (req, res) => { // display the edit page for a recipe
   const recipe = await Recipe.findById(req.params.id);
-  recipe.ingredientNames = await getIngredientNamesById(recipe.ingredients);
-  res.render('recipes/edit.ejs', { recipe: recipe });
+  const ingredients = await Ingredient.find({ owner: req.session.user._id });
+  res.render('recipes/edit.ejs', { recipe: recipe, ingredients: ingredients, unitTypes: unitTypes });
 });
 
 router.put('/:id', async (req, res) => { // handle request to edit a recipe
-  let bodyIngredients = req.body.ingredients;
-  if (typeof bodyIngredients !== 'array') bodyIngredients = [bodyIngredients];
-  const arrIngredients = (await getAndCreateIngredientsByName(bodyIngredients)).map(el => el._id);
-  req.body.ingredients = arrIngredients;
-  console.log(req.body);
-  // await Recipe.findByIdAndUpdate(req.params.id, req.body);
+  await Recipe.findByIdAndUpdate(req.params.id, req.body);
   res.redirect(`/recipes/${req.params.id}`);
 });
-
-async function getIngredientNamesById(arr) {
-  const names = [];
-  for (let id of arr) {
-    let obj = await Ingredient.findById(id);
-    if (obj === null) { names.push(id) } else { names.push(obj.name); };
-
-  };
-  return names;
-};
-
-async function getIngredientIdsByName(arr) {
-  const objIds = [];
-  for (let n of arr) {
-    let obj = await Ingredient.findOne({ name: n.toLowerCase() });
-    if (obj === null) continue; // skip name if it was not found
-    objIds.push(obj._id);
-  };
-  return objIds;
-};
-
-async function createIngredient(name) {
-  const ingr = new Ingredient({ name: name });
-  await ingr.save();
-  return ingr;
-  // nameObj = {name: name};
-  // await Ingredient.create(nameObj);
-  // return await Ingredient.findOne(nameObj);
-};
-
-async function getAndCreateIngredientsByName(arrNames) {
-  const ingredientObjs = [];
-
-  for (let n of arrNames) {
-    if (!n) continue; // skip empty inputs
-    let ingr;
-    ingr = await Ingredient.findOne({ name: n });
-    if (ingr === null || ingr === undefined) ingr = await createIngredient(n);
-
-    ingredientObjs.push(ingr);
-  };
-
-  return ingredientObjs;
-};
-
-async function getIngredientsById(arrIngredientIds) {
-  const ingredients = await Ingredient.findById(arrIngredientIds);
-  return ingredients;
-};
-
-async function getIngredientNameFromId(ingredientId) {
-  const ingredient = await Ingredient.findById(ingredientId);
-  return ingredient.name;
-};
 
 module.exports = router;
