@@ -42,7 +42,9 @@ router.get('/new', async (req, res) => { // display ingredient creation page
 router.get('/:id', async (req, res) => { // display full ingredient page
   try {
     const ingredient = await Ingredient.findById(req.params.id);
-    res.render('ingredients/show.ejs', { ingredient: ingredient });
+    let recipes = await Recipe.findById(ingredient.recipes);
+    if (!Array.isArray(recipes)) { recipes = [recipes] };
+    res.render('ingredients/show.ejs', { ingredient: ingredient, recipes: recipes });
   } catch (err) {
     console.log(err);
     res.redirect('/');

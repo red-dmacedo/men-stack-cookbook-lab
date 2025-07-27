@@ -8,14 +8,22 @@
   <title><%= ingredient.displayName %></title>
 </head>
 <body>
-  <h1><%= ingredient.displayName %></h1>
+  <h1>Ingredient</h1>
   <%- include('../partials/_navbar.ejs') %>
-  <h1>Name: <%= ingredient.displayName %></h1>
+  <h1><%= ingredient.displayName %></h1>
   <div class="flex-column center-items">
     <a href="/ingredients/<%= ingredient._id %>/edit">Edit item name</a>
     <form class="flex-column center-items" action="/ingredients/<%=ingredient._id%>?_method=DELETE" method="POST">
       <button type="submit" style="margin-top: 20px;">Delete</button>
     </form>
+    <h2>Recipes with this Ingredient:</h2>
+    <ol>
+      <% if(recipes[0]){ for(el of recipes) { %>
+        <li><a class="bold" href="/recipes/<%= el._id %>"><%= el.name %></a></li>
+      <% }} else { %>
+        <li><p>None of your recipes use this ingredient.</p></li>
+      <% } %>
+    </ol>
   </div>
 </body>
 </html>
