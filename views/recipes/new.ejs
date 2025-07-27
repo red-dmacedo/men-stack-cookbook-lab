@@ -12,7 +12,7 @@
   <h1>Create a New Recipe</h1>
   <%- include('../partials/_navbar.ejs') %>
   <!-- Schema: name, instructions, owner, ingredients -->
-  <form action="/recipes" method="POST" class="form-type1">
+  <form action="/recipes" method="POST" class="form-type1" id="recipe-creation-form">
     <div>
       <h2>Recipe</h2>
       <label for="name">Recipe Name:</label>
@@ -22,28 +22,33 @@
     <textarea name="instructions" id="recipe-instructions"></textarea>
     <section class="input-ingredients" id="ingredient-area">
       <h2>Ingredients:</h2>
-      <button type="button" id="add-ingredient-btn">Add Ingredient</button>
+      <div id="ingredient-btns">
+        <button type="button" id="add-ingredient-btn">Add Ingredient</button>
+        <button type="button" id="remove-ingredient-btn" style="max-width: 150px;">Remove Ingredient</button>
+      </div>
       <!-- <div name="ingredients-select" class="ingredients-select"> -->
-      <div name="ingredients[]" id="ingredient-line">
-      <% if(ingredients.length > 0){ %>
-        <select name="ingredients[displayName]">
-          <% for(let i of ingredients) { %>
-            <option value="<%= i.name %>"><%= i.displayName %></option>
-          <% } %>
-        </select>
-        <input type="number" name="ingredients[qty]" value="0">
-        <select name="ingredients[unit]">
-          <option value="">Unit(s)</option>
-          <% for(unit of unitTypes) { %>
-            <option value="<%=unit%>"><%=unit.toUpperCase()%>(s)</option>
-          <% } %>
-        </select>
-      <% } else { %>
-        <p>You dont have any ingredients, Go <a href="/ingredients/new">create</a> some!</p>
-      <% }; %>
+      <div id="ingredient-lines">
+        <div id="ingredient-line0">
+        <% if(ingredients.length > 0){ %>
+          <select name="ingredients[0][refId]" id="ingr-refId0">
+            <% for(let i of ingredients) { %>
+              <option value="<%= i._id %>"><%= i.displayName %></option>
+            <% } %>
+          </select>
+          <input type="number" name="ingredients[0][qty]" value="0" id="ingr-qty0">
+          <select name="ingredients[0][unit]" id="ingr-unit0">
+            <option value="">Unit(s)</option>
+            <% for(unit of unitTypes) { %>
+              <option value="<%=unit%>"><%=unit.toUpperCase()%>(s)</option>
+            <% } %>
+          </select>
+        <% } else { %>
+          <p>You dont have any ingredients, Go <a href="/ingredients/new">create</a> some!</p>
+        <% }; %>
+        </div>
       </div>
     </section>
-    <button type="submit">Save Recipe</button>
+    <button type="submit" style="margin-top: 20px;">Save Recipe</button>
   </form>
   <form action="/ingredients" method="POST">
     <h2>Create an Ingredient</h2>
