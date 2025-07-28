@@ -18,7 +18,7 @@
     <% if(ingredients.length) { %>
       <ul>
         <% for(let ingr of recipe.ingredients) { %>
-        <% let curIngr = ingredients.find(el => `${el._id}` === ingr.refId); %>
+        <% let curIngr = ingredients.find(el => el._id.toString() === ingr.refId.toString()); %>
           <li><strong><%= curIngr.displayName || ingr.refId %>:</strong> <%= ingr.qty %> <%= ingr.unit.toUpperCase() %>(s)</li>
         <% } %>
       </ul>

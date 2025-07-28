@@ -10,6 +10,7 @@ const session = require('express-session');
 const authController = require('./controllers/auth.js');
 const recipesController = require('./controllers/recipes.js');
 const ingredientsController = require('./controllers/ingredients.js');
+const testController = require('./controllers/test.js');
 const isSignedIn = require('./middleware/is-signed-in.js');
 const passUserToView = require('./middleware/pass-user-to-view.js');
 const path = require("path");
@@ -56,6 +57,7 @@ app.use('/auth', authController);
 app.use(isSignedIn);
 app.use('/recipes', recipesController);
 app.use('/ingredients', ingredientsController);
+app.use('/test', testController);
 
 app.listen(port, () => {
   console.log(`The express app is ready on port ${port}!`);

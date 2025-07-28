@@ -35,7 +35,7 @@
             <select name="ingredients[<%= idx %>][refId]" id="ingr-refId<%= idx %>">
               <option value="">None</option>
               <% for(let i of ingredients) { %>
-                <option value="<%= i._id %>" <%= (`${i._id}` === ingr.refId) ? "selected" : "" %>><%= i.displayName %></option>
+                <option value="<%= i._id %>" <%= (i._id.toString() === ingr.refId.toString()) ? "selected" : "" %>><%= i.displayName %></option>
               <% } %>
             </select>
             <input type="number" name="ingredients[<%= idx %>][qty]" value="<%= ingr.qty %>" id="ingr-qty<%= idx %>">

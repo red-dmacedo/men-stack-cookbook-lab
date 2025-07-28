@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const data = require('./schemaRefs.js');
+const Ingredient = require('./ingredient.js');
 
 const unitTypes = ['cup', 'gallon', 'liter', 'ounce', 'pint', 'quart', 'tablespoon', 'teaspoon',];
 
 const ingredientRefSchema = mongoose.Schema({
-  refId: data.requiredString,
+  refId: {type: mongoose.Schema.Types.ObjectId, ref: 'Ingredient'},
   qty: data.requiredNumber,
   unit: { type: String, enum: unitTypes, required: true, },
 });
