@@ -77,15 +77,14 @@ router.delete('/:id', async (req, res) => { // handle ingredient delete requests
   try {
     const ingredient = await Ingredient.findById(req.params.id);
 
-    let recipes = Recipe.find({ 'ingredients.refId': req.params.id });
-    if(!Array.isArray(recipes)){recipes = [recipes]};
-    recipes.forEach(async (recipe) => { // remove ingredient from recipes
-      const ingrIndex = recipe.ingredients.findIndex(`${ingredient._id}`);
-      recipe.ingredients.splice(ingrIndex, 1);
-      await recipe.save();
+    const recipes = await Recipe.find({ "ingredients.refId": ingredient._id });
+    // console.log(recipes);
+    recipes.forEach(async rec => { // remove ingredient Id from all recipes that reference it
+      rec.ingredients = rec.ingredients.filter(el => el.refId.toString() !== ingredient._id.toString());
+      await rec.save();
     });
 
-    // await Ingredient.findByIdAndDelete(req.params.id); // delete the ingredient
+    await Ingredient.findByIdAndDelete(req.params.id); // delete the ingredient
     res.redirect('/ingredients');
   } catch (err) {
     console.log(err);
