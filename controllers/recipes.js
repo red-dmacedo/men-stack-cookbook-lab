@@ -15,18 +15,21 @@ router.get('/', async (req, res) => { // display recipes on index page
 
 router.post('/', async (req, res) => { // handle request to create a new recipe
   try {
-    console.log(req.body);
+    req.body.ingredients = req.body.ingredients.filter(el => el.refId && el.qty && el.unit); // remove ingredients with empty attributes
     const newRecipe = new Recipe(req.body);
     newRecipe.owner = req.session.user._id; // assign recipe owner
     await newRecipe.save();
+
     const user = await User.findById(req.session.user._id); // add recipe to user's list of recipes
     user.recipes.push(newRecipe._id);
     await user.save();
+
     req.body.ingredients.forEach(async (el) => { // add recipe id to ingredient
       const ingr = await Ingredient.findById(el.refId);
       ingr.recipes.push(newRecipe._id);
       await ingr.save();
     });
+
     res.redirect('/recipes');
   } catch (err) {
     console.log(err);
@@ -52,6 +55,13 @@ router.get('/:id', async (req, res) => { // display full recipe page
 
 router.delete('/:id', async (req, res) => { // handle request to delete a recipe
   // add logic for removing id from ingredients
+  const recipe = await Recipe.findById(req.params.id);
+  recipe.ingredients.forEach(async (el) => {
+    const ingredient = await Ingredient.findById(el.refId);
+    const recipeIdx = ingredient.recipes.findIndex({ refId: `${recipe._id}` });
+    ingredient.recipes.splice(recipeIdx, 1);
+    await ingredient.save();
+  });
   await Recipe.findByIdAndDelete(req.params.id);
   res.redirect('/recipes');
 });
@@ -63,7 +73,19 @@ router.get('/:id/edit', async (req, res) => { // display the edit page for a rec
 });
 
 router.put('/:id', async (req, res) => { // handle request to edit a recipe
-  await Recipe.findByIdAndUpdate(req.params.id, req.body);
+  req.body.ingredients = req.body.ingredients.filter(el => el.refId && el.qty && el.unit); // remove ingredients with empty attributes
+  const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body);
+
+  const user = await User.findById(req.session.user._id);
+  user.recipes.splice(user.recipes.indexOf(`${recipe._id}`)); // remove recipe id from user's recipe list
+  await user.save();
+
+  const ingredients = await Ingredient.find({ 'recipes': recipe._id });
+  ingredients.forEach(async (el) => {
+    el.recipes.splice(el.recipes.indexOf(recipe._id), 1); // remove recipe id from ingredient's recipe list
+    await el.save();
+  });
+
   res.redirect(`/recipes/${req.params.id}`);
 });
 

@@ -4,7 +4,6 @@ const router = express.Router();
 const User = require('../models/user.js');
 const Recipe = require('../models/recipe.js');
 const Ingredient = require('../models/ingredient.js');
-const removeIngredientIdFromRecipes = require('../middleware/remove-ingredient-id-from-recipes.js');
 const testIfNewIngredientExists = require('../middleware/test-if-new-ingredient-exists.js');
 
 // routes
@@ -41,9 +40,9 @@ router.get('/new', async (req, res) => { // display ingredient creation page
 
 router.get('/:id', async (req, res) => { // display full ingredient page
   try {
-    const ingredient = await Ingredient.findById(req.params.id);
-    let recipes = await Recipe.findById(ingredient.recipes);
-    if (!Array.isArray(recipes)) { recipes = [recipes] };
+    const ingredient = await Ingredient.findById(req.params.id); // get ingredient
+    let recipes = await Recipe.find({ _id: { $in: ingredient.recipes } }); // get recipes that use this ingredient
+    if (!Array.isArray(recipes)) { recipes = [recipes] }; // convert single ingredient to an array of one ingredient (helps with page loop)
     res.render('ingredients/show.ejs', { ingredient: ingredient, recipes: recipes });
   } catch (err) {
     console.log(err);
@@ -64,9 +63,9 @@ router.get('/:id/edit', async (req, res) => { // display edit page for an ingred
 router.put('/:id', async (req, res) => { // handle ingredient update requests
   try {
     const ingredient = await Ingredient.findById(req.params.id);
-    req.body.name = req.body.displayName.toLowerCase();
-    ingredient.set(req.body);
-    await ingredient.save();
+    req.body.name = req.body.displayName.toLowerCase(); // set name property
+    ingredient.set(req.body); // update ingredient
+    await ingredient.save(); // save in database
     res.redirect(`/ingredients/${req.params.id}`);
   } catch (err) {
     console.log(err);
@@ -74,9 +73,19 @@ router.put('/:id', async (req, res) => { // handle ingredient update requests
   }
 });
 
-router.delete('/:id', removeIngredientIdFromRecipes, async (req, res) => { // handle ingredient delete requests
+router.delete('/:id', async (req, res) => { // handle ingredient delete requests
   try {
-    await Ingredient.findByIdAndDelete(req.params.id);
+    const ingredient = await Ingredient.findById(req.params.id);
+
+    let recipes = Recipe.find({ 'ingredients.refId': `${ingredient._id}` });
+    if(!Array.isArray(recipes)){recipes = [recipes]};
+    recipes.forEach(async (recipe) => { // remove ingredient from recipes
+      const ingrIndex = recipe.ingredients.findIndex(`${ingredient._id}`);
+      recipe.ingredients.splice(ingrIndex, 1);
+      await recipe.save();
+    });
+
+    await ingredient.deleteOne(); // delete the ingredient
     res.redirect('/ingredients');
   } catch (err) {
     console.log(err);

@@ -19,7 +19,7 @@
       <ul>
         <% for(let ingr of recipe.ingredients) { %>
         <% let curIngr = ingredients.find(el => `${el._id}` === ingr.refId); %>
-          <li><strong><%= curIngr.displayName %>:</strong> <%= ingr.qty %> <%= ingr.unit.toUpperCase() %>(s)</li>
+          <li><strong><%= curIngr.displayName || ingr.refId %>:</strong> <%= ingr.qty %> <%= ingr.unit.toUpperCase() %>(s)</li>
         <% } %>
       </ul>
     <% } else { %>

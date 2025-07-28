@@ -13,6 +13,8 @@ const ingredientsController = require('./controllers/ingredients.js');
 const isSignedIn = require('./middleware/is-signed-in.js');
 const passUserToView = require('./middleware/pass-user-to-view.js');
 const path = require("path");
+const MongoStore = require("connect-mongo");
+
 
 const port = process.env.PORT ? process.env.PORT : '3000';
 
@@ -31,13 +33,14 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+    }),
   })
 );
 
 app.get('/', (req, res) => {
-  res.render('index.ejs', {
-    user: req.session.user,
-  });
+  res.render('index.ejs', { user: req.session.user, });
 });
 
 app.get('/vip-lounge', (req, res) => {
